@@ -22,7 +22,7 @@ jobs:
     - name: Build and push Docker image
       run: |
         NEW_TAG=$(date +%Y%m%d%H%M%S)
-        docker build -t elifadmin/webserver:$NEW_TAG -f ./Dockerfile .
+        docker build -t elifadmin/webserver:$NEW_TAG -f ./apiserver/Dockerfile .
         docker push elifadmin/webserver:$NEW_TAG
 
     - name: Install kubectl
