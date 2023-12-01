@@ -22,8 +22,8 @@ jobs:
     - name: Build and push Docker image
       run: |
         
-        docker build -t elifadmin/webserver:latest -f ./apiserver/Dockerfile .
-        docker push elifadmin/webserver:latest
+        docker build -t elifadmin/webserver:1001 -f ./apiserver/Dockerfile .
+        docker push elifadmin/webserver:1001
 
     - name: Install kubectl
       run: |
@@ -60,5 +60,5 @@ jobs:
       run: |
        
         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} 'kubectl set image deployment/webserver api-app=elifadmin/webserver:latest' #update deployment
+        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} 'kubectl set image deployment/webserver api-app=elifadmin/webserver:1001' #update deployment
         
