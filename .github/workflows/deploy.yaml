@@ -1,5 +1,3 @@
-name: Deploy to EC2 Kubernetes
-
 on:  #main branchinda commit yapilinca cicd calisir
   push:
     branches:
@@ -21,13 +19,9 @@ jobs:
 
     - name: Build and push Docker image #docker imaji build et ve docker hub a pushla.
       run: |
-        NEW_TAG=$(date +%Y%m%d%H%M%S)
-        docker build -t elifadmin/webserver:$NEW_TAG -f ./apiserver/Dockerfile .
-        docker push elifadmin/webserver:$NEW_TAG
         
-        
-        
-
+        docker build -t elifadmin/webserver:latest -f ./apiserver/Dockerfile .
+        docker push elifadmin/webserver:latest
     - name: Install kubectl # kubernetes cluster da islem yapmak icin kubectl kurulur.
       run: |
         sudo apt-get update
@@ -36,36 +30,27 @@ jobs:
         echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
         sudo apt-get update
         sudo apt-get install -y kubectl
-
     - name: Configure Kubernetes credentials #kubernetes clusterda islem yapmak icin konfig ve credentials girdik.
       run: |
         echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > kubeconfig.yaml
         kubectl config set-context kubernetes-admin@kubernetes --cluster=$(kubectl config view -o jsonpath='{.contexts[0].context.cluster}') --user=$(kubectl config view -o jsonpath='{.contexts[0].context.user}')
-
     - name: Install AWS CLI #aws ile islem yapmak icin aws cli kurduk.
       run: |
         sudo apt-get update
         sudo apt-get install -y awscli
-
     - name: Configure AWS credentials #aws ile islem yapmak icin credentials girdik.
       run: |
         aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws configure set default.region us-east-1  
-
-
     - name: SSH into EC2 and deploy #kubernetes komutlarini calistirmak icin ssh credentials lari girdik.
       env:
             PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-            HOSTNAME: ${{secrets.SSH_HOST}}
-            USER_NAME: ${{secrets.USER_NAME}}
+            HOSTNAME: ${{secrets.SSH_HOST}} #
+            USER_NAME: ${{secrets.USER_NAME}} #ubuntu
      
       run: |     #komutlarimizi calistirmak icin ssh ile baglandik.
        
         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key 
-        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}  './remove_docker_images.sh && ./pull_latest_image.sh && ./update_deployment_yml.sh && kubectl apply -f /home/ubuntu/deployment.yml' #update deployment
+        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} 'kubectl set image deployment/webserver api-app=elifadmin/webserver:latest' #update deployment
         
-#gitupactions kendi bunyesinde konteynir olusturur.bu konteynir vasitasiyla ayni jenkisteki gibi bizim adimiza tum islemleri yapar.
-#ssh ile clustera baglanma, docker imaj olusturma vs gibi.
-#ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME}  # ssh ile makineye baglanma komutu
-#kubectl set image deployment/webserver api-app=elifadmin/webserver:latest = docker hubdaki son imajla deployment i guncelleme.
