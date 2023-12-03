@@ -63,7 +63,7 @@ jobs:
       run: |     #komutlarimizi calistirmak icin ssh ile baglandik.
        
         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key 
-        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '~./remove_docker_images.sh && ~./pull_latest_image.sh && ~./update_deployment_yml.sh && kubectl apply -f /home/ubuntu/deployment.yml' #update deployment
+        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '/home/ubuntu/remove_docker_images.sh && /home/ubuntu/pull_latest_image.sh && /home/ubuntu/update_deployment_yml.sh && kubectl apply -f /home/ubuntu/deployment.yml' #update deployment
         
 #gitupactions kendi bunyesinde konteynir olusturur.bu konteynir vasitasiyla ayni jenkisteki gibi bizim adimiza tum islemleri yapar.
 #ssh ile clustera baglanma, docker imaj olusturma vs gibi.
