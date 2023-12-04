@@ -20,9 +20,9 @@ jobs:
     - name: Build and push Docker image #docker imaji build et ve docker hub a pushla.
       run: |
         
-        NEW_TAG=$(date +%Y%m%d%H%M%S)
-        docker build -t elifadmin/webserver:$NEW_TAG -f ./apiserver/Dockerfile .
-        docker push elifadmin/webserver:$NEW_TAG
+        
+        docker build -t elifadmin/webserver -f ./apiserver/Dockerfile .
+        docker push elifadmin/webserver
     - name: Install kubectl # kubernetes cluster da islem yapmak icin kubectl kurulur.
       run: |
         sudo apt-get update
@@ -53,5 +53,5 @@ jobs:
       run: |     #komutlarimizi calistirmak icin ssh ile baglandik.
        
         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key 
-        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} 'kubectl apply -f /home/ubuntu/apiserver/k8s/' #update deployment
+        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} 'kubectl delete -f /home/ubuntu/apiserver/k8s/ && kubectl apply -f /home/ubuntu/apiserver/k8s/' #update deployment
         
