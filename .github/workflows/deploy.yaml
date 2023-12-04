@@ -20,8 +20,9 @@ jobs:
     - name: Build and push Docker image #docker imaji build et ve docker hub a pushla.
       run: |
         
-        docker build -t elifadmin/webserver:latest -f ./apiserver/Dockerfile .
-        docker push elifadmin/webserver:latest
+        NEW_TAG=$(date +%Y%m%d%H%M%S)
+        docker build -t elifadmin/webserver:$NEW_TAG -f ./apiserver/Dockerfile .
+        docker push elifadmin/webserver:$NEW_TAG
     - name: Install kubectl # kubernetes cluster da islem yapmak icin kubectl kurulur.
       run: |
         sudo apt-get update
