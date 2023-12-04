@@ -18,6 +18,7 @@ spec:
       containers:
         - name: api-app
           image: elifadmin/webserver
+          imagePullPolicy: Always
           ports:
           - containerPort: 80
           env:
