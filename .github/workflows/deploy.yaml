@@ -53,5 +53,5 @@ jobs:
       run: |     #komutlarimizi calistirmak icin ssh ile baglandik.
        
         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key 
-        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} 'kubectl apply -f /home/ubuntu/webserver-deploy.yaml' #update deployment
+        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} 'kubectl apply -f /home/ubuntu/apiserver/k8s/' #update deployment
         
